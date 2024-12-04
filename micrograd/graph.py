@@ -1,5 +1,6 @@
 from graphviz import Digraph
 
+
 def trace(root):
     nodes, edges = set(), set()
 
@@ -14,17 +15,23 @@ def trace(root):
     return nodes, edges
 
 
-def draw_dot(root, format='svg', rankdir='LR'):
+def draw_dot(root, format="svg", rankdir="LR"):
     """
     format: png | svg | ...
     rankdir: TB (top to bottom graph) | LR (left to right)
     """
-    assert rankdir in ['LR', 'TB']
+    assert rankdir in ["LR", "TB"]
     nodes, edges = trace(root)
-    dot = Digraph(format=format, graph_attr={'rankdir': rankdir})  # , node_attr={'rankdir': 'TB'})
+    dot = Digraph(
+        format=format, graph_attr={"rankdir": rankdir}
+    )  # , node_attr={'rankdir': 'TB'})
 
     for n in nodes:
-        dot.node(name=str(id(n)), label="{ data %.4f | grad %.4f }" % (n.data, n.grad), shape='record')
+        dot.node(
+            name=str(id(n)),
+            label="{ data %.4f | grad %.4f }" % (n.data, n.grad),
+            shape="record",
+        )
         if n._op:
             dot.node(name=str(id(n)) + n._op, label=n._op)
             dot.edge(str(id(n)) + n._op, str(id(n)))
