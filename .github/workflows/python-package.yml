@@ -28,7 +28,7 @@ jobs:
         
         python -m pip install flake8 pytest evdspy
         # python -m pip install poetry 
-        python -m pip install uv
+        python -m pip install uv graphviz
         # poetry install
         uv venv
         source .venv/bin/activate
