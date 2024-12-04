@@ -66,14 +66,14 @@ graph TD
     classDef outputNeuron fill:#fff1f0,stroke:#cf1322,stroke-width:2px
 
     %% Input Layer %%
-    subgraph InputLayer ["🎯 Input Layer (3 Neurons)"]
+    subgraph InputLayer ["🎯 Input Layer"]
         InputNeuron1["Neuron 1"]:::inputNeuron
         InputNeuron2["Neuron 2"]:::inputNeuron
         InputNeuron3["Neuron 3"]:::inputNeuron
     end
 
     %% Hidden Layer 1 %%
-    subgraph HiddenLayer1 ["⚙️ Hidden Layer 1 (4 Neurons)"]
+    subgraph HiddenLayer1 ["⚙️ Hidden Layer 1"]
         HiddenNeuron1_1["Neuron 1"]:::hiddenNeuron1
         HiddenNeuron1_2["Neuron 2"]:::hiddenNeuron1
         HiddenNeuron1_3["Neuron 3"]:::hiddenNeuron1
@@ -81,15 +81,15 @@ graph TD
     end
 
     %% Hidden Layer 2 %%
-    subgraph HiddenLayer2 ["⚙️ Hidden Layer 2 (2 Neurons)"]
+    subgraph HiddenLayer2 ["⚙️ Hidden Layer 2"]
         HiddenNeuron2_1["Neuron 1"]:::hiddenNeuron2
         HiddenNeuron2_2["Neuron 2"]:::hiddenNeuron2
     end
 
     %% Output Layer %%
-    subgraph OutputLayer ["🔍 Output Layer (2 Neurons)"]
-        OutputNeuron1["Neuron 1<br>Final Output"]:::outputNeuron
-        OutputNeuron2["Neuron 2<br>Final Output"]:::outputNeuron
+    subgraph OutputLayer ["🔍 Output Layer"]
+        OutputNeuron1["Neuron 1"]:::outputNeuron
+        OutputNeuron2["Neuron 2"]:::outputNeuron
     end
 
     %% Connections Between Layers %%
