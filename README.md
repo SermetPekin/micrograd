@@ -10,6 +10,55 @@ The original micrograd library served as the foundation for this project, provid
 This fork includes additional features, improvements, and extensions to the original project to enhance its functionality and adapt it for new use cases. Special thanks to Andrej Karpathy for sharing his work with the community and making this project possible.
 
 
+
+
+
+
+### ! Below shows Karpathy's original README.md file 
+shows the original micrograd package's usage when installed from PYPI repository 
+
+# micrograd (this clone)
+```bash 
+git clone https://github.com/SermetPekin/micrograd.git
+# usage with uv package (just like poetry / pipvenv but faster to create env and install dependencies)
+pip install uv 
+uv venv 
+source .venv\scripts\activate
+uv pip install . 
+# run example 
+python ./example.py
+# for tests
+pytest -v 
+
+```
+
+### Example usage
+
+Below is a slightly contrived example showing a number of possible supported operations:
+
+```python
+from micrograd import Value
+
+a = Value(-4.0)
+b = Value(2.0)
+c = a + b
+d = a * b + b ** 3
+c += c + 1
+c += 1 + c + (-a)
+d += d * 2 + (b + a).relu()
+d += 3 * d + (b - a).relu()
+e = c - d
+f = e ** 2
+g = f / 2.0
+g += 10.0 / f
+print(f'{g.data:.4f}')  # prints 24.7041, the outcome of this forward pass
+g.backward()
+print(f'{a.grad:.4f}')  # prints 138.8338, i.e. the numerical value of dg/da
+print(f'{b.grad:.4f}')  # prints 645.5773, i.e. the numerical value of dg/db
+```
+
+
+
 # micrograd
 
 ![awww](puppy.jpg)
