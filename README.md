@@ -54,7 +54,7 @@ print(f'{b.grad:.4f}')  # prints 645.5773, i.e. the numerical value of dg/db
 
 
 
-# Neural Network Architecture
+### Neural Network Architecture
 
 Here is a visual representation of the MLP architecture:
 ```mermaid
