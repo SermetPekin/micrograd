@@ -1,4 +1,9 @@
 
+This project is a fork of [micrograd](https://github.com/karpathy/micrograd), which is licensed under the MIT License. 
+
+It includes additional features and improvements.
+
+
 # micrograd
 
 ![awww](puppy.jpg)
