@@ -1,5 +1,5 @@
 [![Python package](https://github.com/SermetPekin/micrograd/actions/workflows/python-package.yml/badge.svg?1)](https://github.com/SermetPekin/micrograd/actions/workflows/python-package.yml?1)
-[![](https://img.shields.io/badge/python-3.10+-blue.svg)]
+![](https://img.shields.io/badge/python-3.10+-blue.svg)
 
 
 ## Acknowledgment
