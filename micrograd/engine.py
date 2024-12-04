@@ -102,3 +102,14 @@ class Value:
 
     def __repr__(self) -> str:
         return f"Value(data={self.data}, grad={self.grad}, op={self._op})"
+
+
+class Weight(Value):
+    def __init__(self, data: Number, _children: tuple = (), _op: str = '', regularization: str = 'none'):
+        super().__init__(data, _children, _op)
+        self.regularization = regularization
+
+
+class Bias(Value):
+    def __init__(self, data: Number, _children: tuple = (), _op: str = ''):
+        super().__init__(data, _children, _op)
