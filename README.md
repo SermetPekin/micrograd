@@ -1,7 +1,5 @@
 [![Python package](https://github.com/SermetPekin/micrograd/actions/workflows/python-package.yml/badge.svg?1)](https://github.com/SermetPekin/micrograd/actions/workflows/python-package.yml?1)
-
-[![Python Package](https://github.com/SermetPekin/perse/actions/workflows/python-package.yml/badge.svg?2)](https://github.com/SermetPekin/perse/actions/workflows/python-package.yml)
-[![PyPI](https://img.shields.io/pypi/v/perse)](https://img.shields.io/pypi/v/perse) ![PyPI Downloads](https://static.pepy.tech/badge/perse?2)![t](https://img.shields.io/badge/status-maintained-yellow.svg) [![](https://img.shields.io/github/license/SermetPekin/perse.svg)](https://github.com/SermetPekin/perse/blob/master/LICENSE.md) [![](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/) 
+[![](https://img.shields.io/badge/python-3.10+-blue.svg)]
 
 
 ## Acknowledgment
@@ -55,5 +53,3 @@ print(f'{b.grad:.4f}')  # prints 645.5773, i.e. the numerical value of dg/db
 ```
 
 
-#### Below there is a link to a copy of Karpathy's original README.md file 
-shows the original micrograd package's usage when installed from PYPI repository [README-original](README-original.md)
