@@ -5,3 +5,8 @@
 build/
 .python-version
 __pycache__/
+ignore*.*
+ignore*/
+--*/
+--*.*
+
