@@ -1,7 +1,12 @@
 
-This project is a fork of [micrograd](https://github.com/karpathy/micrograd), which is licensed under the MIT License. 
 
-It includes additional features and improvements.
+## Acknowledgment
+
+This project is a fork of [micrograd](https://github.com/karpathy/micrograd) by [Andrej Karpathy](https://github.com/karpathy), which is licensed under the MIT License. 
+
+The original micrograd library served as the foundation for this project, providing a simple and elegant implementation of an automatic differentiation engine. All credit for the original implementation and its inspiration goes to Andrej Karpathy.
+
+This fork includes additional features, improvements, and extensions to the original project to enhance its functionality and adapt it for new use cases. Special thanks to Andrej Karpathy for sharing his work with the community and making this project possible.
 
 
 # micrograd
