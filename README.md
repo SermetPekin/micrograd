@@ -53,3 +53,79 @@ print(f'{b.grad:.4f}')  # prints 645.5773, i.e. the numerical value of dg/db
 ```
 
 
+
+# Neural Network Architecture
+
+Here is a visual representation of the MLP architecture:
+```mermaid
+graph TD
+    %% Styling for Neurons %%
+    classDef inputNeuron fill:#e6f7ff,stroke:#1d4e89,stroke-width:2px
+    classDef hiddenNeuron1 fill:#d9f7be,stroke:#389e0d,stroke-width:2px
+    classDef hiddenNeuron2 fill:#f6e6ff,stroke:#722ed1,stroke-width:2px
+    classDef outputNeuron fill:#fff1f0,stroke:#cf1322,stroke-width:2px
+
+    %% Input Layer %%
+    subgraph InputLayer ["🎯 Input Layer (3 Neurons)"]
+        InputNeuron1["Neuron 1"]:::inputNeuron
+        InputNeuron2["Neuron 2"]:::inputNeuron
+        InputNeuron3["Neuron 3"]:::inputNeuron
+    end
+
+    %% Hidden Layer 1 %%
+    subgraph HiddenLayer1 ["⚙️ Hidden Layer 1 (4 Neurons)"]
+        HiddenNeuron1_1["Neuron 1"]:::hiddenNeuron1
+        HiddenNeuron1_2["Neuron 2"]:::hiddenNeuron1
+        HiddenNeuron1_3["Neuron 3"]:::hiddenNeuron1
+        HiddenNeuron1_4["Neuron 4"]:::hiddenNeuron1
+    end
+
+    %% Hidden Layer 2 %%
+    subgraph HiddenLayer2 ["⚙️ Hidden Layer 2 (2 Neurons)"]
+        HiddenNeuron2_1["Neuron 1"]:::hiddenNeuron2
+        HiddenNeuron2_2["Neuron 2"]:::hiddenNeuron2
+    end
+
+    %% Output Layer %%
+    subgraph OutputLayer ["🔍 Output Layer (2 Neurons)"]
+        OutputNeuron1["Neuron 1<br>Final Output"]:::outputNeuron
+        OutputNeuron2["Neuron 2<br>Final Output"]:::outputNeuron
+    end
+
+    %% Connections Between Layers %%
+    %% Input Layer to Hidden Layer 1 %%
+    InputNeuron1 --> HiddenNeuron1_1
+    InputNeuron1 --> HiddenNeuron1_2
+    InputNeuron1 --> HiddenNeuron1_3
+    InputNeuron1 --> HiddenNeuron1_4
+
+    InputNeuron2 --> HiddenNeuron1_1
+    InputNeuron2 --> HiddenNeuron1_2
+    InputNeuron2 --> HiddenNeuron1_3
+    InputNeuron2 --> HiddenNeuron1_4
+
+    InputNeuron3 --> HiddenNeuron1_1
+    InputNeuron3 --> HiddenNeuron1_2
+    InputNeuron3 --> HiddenNeuron1_3
+    InputNeuron3 --> HiddenNeuron1_4
+
+    %% Hidden Layer 1 to Hidden Layer 2 %%
+    HiddenNeuron1_1 --> HiddenNeuron2_1
+    HiddenNeuron1_1 --> HiddenNeuron2_2
+
+    HiddenNeuron1_2 --> HiddenNeuron2_1
+    HiddenNeuron1_2 --> HiddenNeuron2_2
+
+    HiddenNeuron1_3 --> HiddenNeuron2_1
+    HiddenNeuron1_3 --> HiddenNeuron2_2
+
+    HiddenNeuron1_4 --> HiddenNeuron2_1
+    HiddenNeuron1_4 --> HiddenNeuron2_2
+
+    %% Hidden Layer 2 to Output Layer %%
+    HiddenNeuron2_1 --> OutputNeuron1
+    HiddenNeuron2_1 --> OutputNeuron2
+
+    HiddenNeuron2_2 --> OutputNeuron1
+    HiddenNeuron2_2 --> OutputNeuron2
+```
