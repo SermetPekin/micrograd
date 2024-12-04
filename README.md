@@ -1,3 +1,4 @@
+[![Python package](https://github.com/SermetPekin/micrograd/actions/workflows/python-package.yml/badge.svg)](https://github.com/SermetPekin/micrograd/actions/workflows/python-package.yml)
 
 
 ## Acknowledgment
