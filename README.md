@@ -137,7 +137,7 @@ graph TD
 
 The notebook `demo.ipynb` provides a full demo of training an 2-layer neural network (MLP) binary classifier. This is achieved by initializing a neural net from `micrograd.nn` module, implementing a simple svm "max-margin" binary classification loss and using SGD for optimization. As shown in the notebook, using a 2-layer neural net with two 16-node hidden layers we achieve the following decision boundary on the moon dataset:
 
-![2d neuron](moon_mlp.png)
+![2d neuron](images/moon_mlp.png)
 
 ### Tracing / visualization
 
@@ -152,7 +152,7 @@ y = n(x)
 # dot = draw_dot(y)
 ```
 
-![2d neuron](gout.svg)
+![2d neuron](images/gout.svg)
 
 ### Running tests
 
