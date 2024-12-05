@@ -6,19 +6,29 @@ if TYPE_CHECKING:
 
 class Activation:
     @staticmethod
-    def relu(x: "Value") -> "Value":
+    def relu(value: "Value") -> "Value":
         from .engine import Value
-
-        return x if x.data > 0 else Value(0)
-
-    @staticmethod
-    def linear(x: "Value") -> "Value":
-        return x
+        return value.relu()
 
     @staticmethod
-    def sigmoid(x: "Value") -> "Value":
-        return 1 / (1 + (-x).exp())
+    def linear(value: "Value") -> "Value":
+        return value
 
     @staticmethod
-    def tanh(x: "Value") -> "Value":
-        return (x.exp() - (-x).exp()) / (x.exp() + (-x).exp())
+    def sigmoid(value: "Value") -> "Value":
+        from .engine import Value
+        self = value
+        out = Value(1 / (1 + (-value).exp()), (self,), "Sigmoid")
+
+        # Value(0 if self.data < 0 else self.data, (self,), "Sigmoid")
+        def _backward():
+            self.grad += (out.data > 0) * out.grad
+
+        out._backward = _backward
+        return out
+
+        # return 1 / (1 + (-value).exp())
+
+    @staticmethod
+    def tanh(value: "Value") -> "Value":
+        return (value.exp() - (-value).exp()) / (value.exp() + (-value).exp())
