@@ -1,5 +1,6 @@
 import random
 from typing import List, Callable, Optional
+from abc import ABC, abstractmethod
 
 from micrograd.engine import Value, Weight, Bias
 
@@ -110,8 +111,9 @@ class MLP(Module):
     def __repr__(self) -> str:
         return f"MLP of [{', '.join(str(layer) for layer in self.layers)}]"
 
-
-from abc import ABC, abstractmethod
+    def clone(self):
+        import copy
+        return copy.deepcopy(self)
 
 
 class OptimizerAbstract(ABC):
@@ -133,6 +135,9 @@ class OptimizerForComparison(OptimizerAbstract):
         self.momentum = momentum
         self.weight_decay = weight_decay
         self.velocities = {}  # {id(param): 0.0 for param in parameters}  # Momentum storage
+
+    def __call__(self, *args, **kw) -> 'OptimizerForComparison':
+        return self
 
     def step(self, parameters=(), learning_rate: float = None) -> None:
         if parameters:
@@ -194,3 +199,88 @@ class Trainer:
                 self.model.zero_grad()
 
             print(f"Epoch {epoch + 1}/{epochs}, Loss: {total_loss / len(inputs):.4f}")
+
+
+class TrainerForComparison:
+    def __init__(
+            self,
+            model: Module,
+            loss_fn: Callable[[Value, Value], Value],
+            optimizer: OptimizerAbstract,
+            num_clones: int = 1,
+            eval_interval: int = 200,
+    ):
+        self.models = [model.clone() for _ in range(num_clones)]
+        self.loss_fn = loss_fn
+        self.optimizers = [optimizer(model.parameters()) for model in
+                           self.models]  # [optimizer(model.parameters()) for model in self.models]
+        self.eval_interval = eval_interval
+        self.best_model = None
+
+    def train(
+            self,
+            inputs: List[List[Value]],
+            targets: List[Value],
+            epochs: int,
+            learning_rate: float,
+    ) -> None:
+        for epoch in range(epochs):
+            if epoch < self.eval_interval:
+                # Train all clones during the evaluation interval
+                for index, (model, optimizer) in enumerate(zip(self.models, self.optimizers)):
+                    model.number = index + 1
+                    self._train_one_epoch(index, model, optimizer, inputs, targets, learning_rate)
+            elif epoch == self.eval_interval:
+                # Evaluate clones and select the best one
+                self.best_model = self._evaluate_and_select_best(inputs, targets)
+                print(f"After {self.eval_interval} epochs, best model selected.")
+            else:
+                # Train only the best model
+                self._train_one_epoch( self.best_model.number, self.best_model, self.optimizers[0], inputs, targets, learning_rate)
+
+    def _train_one_epoch(
+            self,
+            index: int,
+            model: Module,
+            optimizer: OptimizerAbstract,
+            inputs: List[List[Value]],
+            targets: List[Value],
+            learning_rate: float,
+    ) -> None:
+        total_loss = 0
+        for input_data, target in zip(inputs, targets):
+            # Forward pass
+            predictions = model(input_data)
+            loss = self.loss_fn(predictions, target)
+            total_loss += loss.data
+
+            # Backward pass
+            loss.backward()
+
+            # Update parameters
+            optimizer.step(model.parameters(), learning_rate)
+
+            # Zero gradients for the next iteration
+            model.zero_grad()
+
+        print(f"Training Loss: {total_loss / len(inputs):.4f}")
+
+        # print(f"Epoch {epoch + 1}/{epochs}, Clone {index + 1}, Training Loss: {total_loss / len(inputs):.4f}")
+        print(f"Epoch  Clone {index + 1}, Training Loss: {total_loss / len(inputs):.4f}")
+        # print(f"Clone {i + 1}, Validation Loss: {avg_loss:.4f}")
+
+    def _evaluate_and_select_best(self, inputs: List[List[Value]], targets: List[Value]) -> Module:
+        best_loss = float("inf")
+        best_model = None
+        for model in self.models:
+            total_loss = 0
+            for input_data, target in zip(inputs, targets):
+                predictions = model(input_data)
+                loss = self.loss_fn(predictions, target)
+                total_loss += loss.data
+            avg_loss = total_loss / len(inputs)
+            print(f"Model Loss: {avg_loss:.4f}")
+            if avg_loss < best_loss:
+                best_loss = avg_loss
+                best_model = model
+        return best_model

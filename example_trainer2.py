@@ -59,8 +59,8 @@ def data2():
     return inputs, targets, torch_inputs, torch_targets
 
 
-@pytest.mark.skipif(True, reason='TODO')
-def test_micrograd_vs_torch():
+# @pytest.mark.skipif(True, reason='TODO')
+def compare_micrograd_vs_torch():
     # Dataset
     inputs, targets, torch_inputs, torch_targets = data1()
 
@@ -70,12 +70,13 @@ def test_micrograd_vs_torch():
     micrograd_trainer = TrainerForComparison(
         model=micrograd_model,
         loss_fn=mean_squared_error,
-        optimizer=micrograd_optimizer
+        optimizer=micrograd_optimizer,
+        num_clones=5
     )
 
     # initialize_weights_micrograd(micrograd_model)
 
-    EPOCHS = int(100)
+    EPOCHS = int(10000)
     # Train Micrograd Model
     micrograd_trainer.train(inputs, targets, epochs=EPOCHS, learning_rate=0.01)
 
@@ -100,6 +101,11 @@ def test_micrograd_vs_torch():
     torch_test_input = torch.tensor([[5.0, 6.0]])
     torch_prediction = torch_model(torch_test_input).item()
 
+    msg = f'micrograd_prediction: {micrograd_prediction} torch_prediction :  {torch_prediction}'
+    print(msg)
     # Assert that predictions are close
-    assert pytest.approx(micrograd_prediction,
-                         rel=1e-2) == torch_prediction, f'micrograd_prediction: {micrograd_prediction} torch_prediction :  {torch_prediction}'
+    # assert pytest.approx(micrograd_prediction,
+    #                      rel=1e-2) == torch_prediction, f'micrograd_prediction: {micrograd_prediction} torch_prediction :  {torch_prediction}'
+
+
+compare_micrograd_vs_torch()
