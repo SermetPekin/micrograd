@@ -2,19 +2,35 @@ import math
 from typing import Callable, Set, Union
 
 Number = Union[int, float]
+from abc import ABC, abstractmethod
 
 
-class Value:
-    """stores a single scalar value and its gradient"""
+class ValueMagics(ABC):
+    """Macig methods of Value class"""
 
-    def __init__(self, data: Number | 'Value', _children: tuple = (), _op: str = ""):
+    def __neg__(self) -> "Value":  # -self
+        return self * -1
 
-        self.data: Number = data
-        self.grad: float = 0.0
-        # internal variables used for autograd graph construction
-        self._backward: Callable[[], None] = lambda: None
-        self._prev: Set["Value"] = set(_children)
-        self._op = _op  # the op that produced this node, for graphviz / debugging / etc
+    def __radd__(self, other) -> "Value":  # other + self
+        return self + other
+
+    def __sub__(self, other) -> "Value":  # self - other
+        return self + (-other)
+
+    def __rsub__(self, other) -> "Value":  # other - self
+        return other + (-self)
+
+    def __rmul__(self, other) -> "Value":  # other * self
+        return self * other
+
+    def __truediv__(self, other) -> "Value":  # self / other
+        return self * other ** -1
+
+    def __rtruediv__(self, other) -> "Value":  # other / self
+        return other * self ** -1
+
+    def __repr__(self) -> str:
+        return f"Value(data={self.data}, grad={self.grad}, op={self._op})"
 
     def __add__(self, other: Number | "Value") -> "Value":
         other = other if isinstance(other, Value) else Value(other)
@@ -66,6 +82,19 @@ class Value:
 
         return out
 
+
+class Value(ValueMagics):
+    """stores a single scalar value and its gradient"""
+
+    def __init__(self, data: Number | 'Value', _children: tuple = (), _op: str = ""):
+
+        self.data: Number = data
+        self.grad: float = 0.0
+        # internal variables used for autograd graph construction
+        self._backward: Callable[[], None] = lambda: None
+        self._prev: Set["Value"] = set(_children)
+        self._op = _op  # the op that produced this node, for graphviz / debugging / etc
+
     def relu(self) -> "Value":
         out = Value(0 if self.data < 0 else self.data, (self,), "ReLU")
 
@@ -115,30 +144,6 @@ class Value:
         self.grad = 1
         for v in reversed(topo):
             v._backward()
-
-    def __neg__(self) -> "Value":  # -self
-        return self * -1
-
-    def __radd__(self, other) -> "Value":  # other + self
-        return self + other
-
-    def __sub__(self, other) -> "Value":  # self - other
-        return self + (-other)
-
-    def __rsub__(self, other) -> "Value":  # other - self
-        return other + (-self)
-
-    def __rmul__(self, other) -> "Value":  # other * self
-        return self * other
-
-    def __truediv__(self, other) -> "Value":  # self / other
-        return self * other ** -1
-
-    def __rtruediv__(self, other) -> "Value":  # other / self
-        return other * self ** -1
-
-    def __repr__(self) -> str:
-        return f"Value(data={self.data}, grad={self.grad}, op={self._op})"
 
     def exp(self) -> "Value":
         out = Value(math.exp(self.data), (self,), "exp")
