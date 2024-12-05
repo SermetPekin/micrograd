@@ -1,6 +1,6 @@
 from micrograd import Activation, Value
 
-from micrograd import Value, MLP, Optimizer , Trainer
+from micrograd import Value, MLP, Optimizer , Trainer , OptimizerForComparison
 
 # Dataset
 inputs = [
@@ -22,6 +22,35 @@ def mean_squared_error(predicted: Value, target: Value) -> Value:
     return (predicted - target) ** 2
 
 
+
+import torch
+from micrograd.engine import Value
+
+
+def test_sanity_check_with_trainer():
+
+    x = Value(-4.0)
+    z = 2 * x + 2 + x
+    q = z.relu() + z * x
+    h = (z * z).relu()
+    y = h + q + q * x
+    y.backward()
+    xmg, ymg = x, y
+
+    x = torch.Tensor([-4.0]).double()
+    x.requires_grad = True
+    z = 2 * x + 2 + x
+    q = z.relu() + z * x
+    h = (z * z).relu()
+    y = h + q + q * x
+    y.backward()
+    xpt, ypt = x, y
+
+    # forward pass went well
+    assert ymg.data == ypt.data.item()
+    # backward pass went well
+    assert xmg.grad == xpt.grad.item()
+
 def test_complete_train(capsys):
     with capsys.disabled():
 
@@ -29,7 +58,7 @@ def test_complete_train(capsys):
         model = MLP(input_size=2, layer_sizes=[3, 1])
 
         # Optimizer
-        optimizer = Optimizer()
+        optimizer = OptimizerForComparison()
 
         # Trainer
         trainer = Trainer(model=model, loss_fn=mean_squared_error, optimizer=optimizer)

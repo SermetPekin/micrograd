@@ -25,7 +25,7 @@ class Neuron(Module):
 
         if activation_function is None:
             self.activation_function: Optional[Callable[[Value], Value]] = (
-                Activation.linear
+                Activation.relu
             )
         else:
             self.activation_function: Optional[Callable[[Value], Value]] = (
@@ -111,11 +111,51 @@ class MLP(Module):
         return f"MLP of [{', '.join(str(layer) for layer in self.layers)}]"
 
 
-class Optimizer:
+from abc import ABC, abstractmethod
+
+
+class OptimizerAbstract(ABC):
+    """OptimizerAbstract"""
+
+
+class Optimizer(OptimizerAbstract):
     @staticmethod
     def step(parameters: List[Value], learning_rate: float) -> None:
         for param in parameters:
             param.data -= learning_rate * param.grad
+
+
+class OptimizerForComparison(OptimizerAbstract):
+    def __init__(self, parameters: List[Value] = (), learning_rate: float = 0.01, momentum: float = 0.0,
+                 weight_decay: float = 0.0):
+        self.parameters = parameters
+        self.learning_rate = learning_rate
+        self.momentum = momentum
+        self.weight_decay = weight_decay
+        self.velocities = {}  # {id(param): 0.0 for param in parameters}  # Momentum storage
+
+    def step(self, parameters=(), learning_rate: float = None) -> None:
+        if parameters:
+            self.parameters = parameters
+
+        if learning_rate:
+            self.learning_rate = learning_rate
+
+        for param in self.parameters:
+
+            if id(param) not in self.velocities:
+                self.velocities[id(param)] = 0.0
+
+            # Apply weight decay (L2 regularization)
+            if self.weight_decay > 0:
+                param.grad += self.weight_decay * param.data
+
+            # Apply momentum
+            velocity = self.momentum * self.velocities[id(param)] - self.learning_rate * param.grad
+            self.velocities[id(param)] = velocity
+
+            # Update parameters
+            param.data += velocity
 
 
 class Trainer:
@@ -123,7 +163,7 @@ class Trainer:
             self,
             model: Module,
             loss_fn: Callable[[Value, Value], Value],
-            optimizer: Optimizer,
+            optimizer: OptimizerAbstract,
     ):
         self.model = model
         self.loss_fn = loss_fn

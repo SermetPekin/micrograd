@@ -1,5 +1,5 @@
 from micrograd.engine import Value
-from micrograd.nn import MLP, Neuron, Trainer, Optimizer
+from micrograd.nn import MLP, Neuron, Trainer, Optimizer, OptimizerForComparison
 from micrograd.graph import draw_dot
 from micrograd.activation_functions import Activation
 
