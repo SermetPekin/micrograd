@@ -6,7 +6,7 @@ from abc import ABC, abstractmethod
 
 
 class ValueMagics(ABC):
-    """Macig methods of Value class"""
+    """Magic methods of Value class"""
 
     def __neg__(self) -> "Value":  # -self
         return self * -1
