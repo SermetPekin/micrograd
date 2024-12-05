@@ -1,6 +1,6 @@
 # Example: Training a simple MLP
 import random
-from typing import List, Union
+from typing import List
 
 from micrograd.engine import Value
 from micrograd.nn import MLP

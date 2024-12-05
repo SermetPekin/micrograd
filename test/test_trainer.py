@@ -1,6 +1,9 @@
 from micrograd import Activation, Value
 
-from micrograd import Value, MLP, Optimizer , Trainer , OptimizerForComparison
+from micrograd import MLP, Trainer, OptimizerForComparison
+
+import torch
+
 
 # Dataset
 inputs = [
@@ -23,12 +26,8 @@ def mean_squared_error(predicted: Value, target: Value) -> Value:
 
 
 
-import torch
-from micrograd.engine import Value
-
 
 def test_sanity_check_with_trainer():
-
     x = Value(-4.0)
     z = 2 * x + 2 + x
     q = z.relu() + z * x
@@ -51,11 +50,22 @@ def test_sanity_check_with_trainer():
     # backward pass went well
     assert xmg.grad == xpt.grad.item()
 
+
 def test_complete_train(capsys):
     with capsys.disabled():
+        from micrograd.activation_functions import Activation
+
+        # mlp = MLP(
+        #     input_size=2,
+        #     layer_sizes=[3, 1],
+        #     activation_function_hidden=Activation.sigmoid,
+        #     activation_function_output=Activation.tanh,
+        # )
 
         # Model
-        model = MLP(input_size=2, layer_sizes=[3, 1])
+        model = MLP(input_size=2, layer_sizes=[3, 1],
+                    activation_function_hidden=Activation.sigmoid ,
+                    activation_function_output=Activation.linear)
 
         # Optimizer
         optimizer = OptimizerForComparison()
@@ -69,8 +79,7 @@ def test_complete_train(capsys):
         # Test
         test_input = [Value(5.0), Value(6.0)]  # Expected output: 31
         prediction = model(test_input)
-        print(f"Prediction for input {test_input}: {prediction.data:.4f}")
-
+        print(f"Prediction for input {len(test_input)}: {prediction.data:.4f}")
 
 
 def test_relu():

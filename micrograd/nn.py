@@ -1,6 +1,6 @@
 import random
 from typing import List, Callable, Optional
-from abc import ABC, abstractmethod
+from abc import ABC
 
 from micrograd.engine import Value, Weight, Bias
 
@@ -13,7 +13,6 @@ class Module:
 
     def parameters(self) -> List[Value]:
         return []
-
 
 
 class Neuron(Module):
@@ -83,18 +82,22 @@ class Layer(Module):
         return f"Layer of [{', '.join(str(neuron) for neuron in self.neurons)}]"
 
 
+from .activation_functions import Activation
+
+
 class MLP(Module):
 
-    def __init__(self, input_size: int, layer_sizes: List[int]):
-        from .activation_functions import Activation
-
+    def __init__(self, input_size: int, layer_sizes: List[int],
+                 activation_function_hidden=Activation.relu,
+                 activation_function_output=Activation.linear,
+                 ):
         sizes: List[int] = [input_size] + layer_sizes
         self.layers: List[Layer] = [
             Layer(
                 sizes[i],
                 sizes[i + 1],
                 activation_function=(
-                    Activation.relu if i != len(layer_sizes) - 1 else Activation.linear
+                    activation_function_hidden if i != len(layer_sizes) - 1 else activation_function_output
                 ),
             )
             for i in range(len(layer_sizes))
@@ -198,8 +201,7 @@ class Trainer:
 
                 # Zero gradients for the next iteration
                 self.model.zero_grad()
-
-            print(f"Epoch {epoch + 1}/{epochs}, Loss: {total_loss / len(inputs):.4f}")
+            # print(f"Epoch {epoch + 1}/{epochs}, Loss: {total_loss / {len(inputs)} :.4f}")
 
 
 class TrainerForComparison:
@@ -237,7 +239,8 @@ class TrainerForComparison:
                 print(f"After {self.eval_interval} epochs, best model selected.")
             else:
                 # Train only the best model
-                self._train_one_epoch( self.best_model.number, self.best_model, self.optimizers[0], inputs, targets, learning_rate)
+                self._train_one_epoch(self.best_model.number, self.best_model, self.optimizers[0], inputs, targets,
+                                      learning_rate)
 
     def _train_one_epoch(
             self,

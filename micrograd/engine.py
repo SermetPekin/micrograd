@@ -2,7 +2,7 @@ import math
 from typing import Callable, Set, Union
 
 Number = Union[int, float]
-from abc import ABC, abstractmethod
+from abc import ABC
 
 
 class ValueMagics(ABC):
@@ -31,6 +31,11 @@ class ValueMagics(ABC):
 
     def __repr__(self) -> str:
         return f"Value(data={self.data}, grad={self.grad}, op={self._op})"
+
+    def __format__(self, format_spec):
+        if not format_spec:
+            return f"Value(data={self.data}, grad={self.grad})"
+        return f"Value(data={self.data:{format_spec}}, grad={self.grad:{format_spec}})"
 
     def __add__(self, other: Number | "Value") -> "Value":
         other = other if isinstance(other, Value) else Value(other)
@@ -146,7 +151,11 @@ class Value(ValueMagics):
             v._backward()
 
     def exp(self) -> "Value":
-        out = Value(math.exp(self.data), (self,), "exp")
+        v = self.data
+        if isinstance(v, Value):
+            v = v.data
+        v = max(min(v, 700), -700)
+        out = Value(math.exp(v), (self,), "exp")
 
         def _backward():
             self.grad += out.data * out.grad

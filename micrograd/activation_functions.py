@@ -7,7 +7,6 @@ if TYPE_CHECKING:
 class Activation:
     @staticmethod
     def relu(value: "Value") -> "Value":
-        from .engine import Value
         return value.relu()
 
     @staticmethod
@@ -16,10 +15,8 @@ class Activation:
 
     @staticmethod
     def sigmoid(value: "Value") -> "Value":
-        from .engine import Value
         return value.sigmoid()
 
     @staticmethod
     def tanh(value: "Value") -> "Value":
-        from .engine import Value
         return value.tanh()

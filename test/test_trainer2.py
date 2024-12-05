@@ -1,6 +1,6 @@
 import pytest
 import torch
-from micrograd import Value, MLP, Optimizer, Trainer, OptimizerForComparison, TrainerForComparison
+from micrograd import Value, MLP, OptimizerForComparison, TrainerForComparison
 
 
 class TorchMLP(torch.nn.Module):
