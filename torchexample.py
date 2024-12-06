@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 
 import torch
 from torch import nn
@@ -28,9 +27,9 @@ batch_size = 64
 train_dataloader = DataLoader(training_data, batch_size=batch_size)
 test_dataloader = DataLoader(test_data, batch_size=batch_size)
 
-for X, y in test_dataloader:
-    print(f"Shape of X [N, C, H, W]: {X.shape}")
-    print(f"Shape of y: {y.shape} {y.dtype}")
+for X_Gl, y_Gl in test_dataloader:
+    print(f"Shape of X [N, C, H, W]: {X_Gl.shape}")
+    print(f"Shape of y: {y_Gl.shape} {y_Gl.dtype}")
     break
 
 # Get cpu, gpu or mps device for training.
@@ -43,13 +42,14 @@ device = (
 )
 print(f"Using {device} device")
 
+
 # Define model
 class NeuralNetwork(nn.Module):
     def __init__(self):
         super().__init__()
         self.flatten = nn.Flatten()
         self.linear_relu_stack = nn.Sequential(
-            nn.Linear(28*28, 512),
+            nn.Linear(28 * 28, 512),
             nn.ReLU(),
             nn.Linear(512, 512),
             nn.ReLU(),
@@ -61,11 +61,13 @@ class NeuralNetwork(nn.Module):
         logits = self.linear_relu_stack(x)
         return logits
 
-model = NeuralNetwork().to(device)
-print(model)
 
-loss_fn = nn.CrossEntropyLoss()
-optimizer = torch.optim.SGD(model.parameters(), lr=1e-3)
+MODEL = NeuralNetwork().to(device)
+print(MODEL)
+
+LOSS_FN = nn.CrossEntropyLoss()
+OPTIMIZER = torch.optim.SGD(MODEL.parameters(), lr=1e-3)
+
 
 def train(dataloader, model, loss_fn, optimizer):
     size = len(dataloader.dataset)
@@ -86,6 +88,7 @@ def train(dataloader, model, loss_fn, optimizer):
             loss, current = loss.item(), (batch + 1) * len(X)
             print(f"loss: {loss:>7f}  [{current:>5d}/{size:>5d}]")
 
+
 def test(dataloader, model, loss_fn):
     size = len(dataloader.dataset)
     num_batches = len(dataloader)
@@ -99,11 +102,39 @@ def test(dataloader, model, loss_fn):
             correct += (pred.argmax(1) == y).type(torch.float).sum().item()
     test_loss /= num_batches
     correct /= size
-    print(f"Test Error: \n Accuracy: {(100*correct):>0.1f}%, Avg loss: {test_loss:>8f} \n")
+    print(f"Test Error: \n Accuracy: {(100 * correct):>0.1f}%, Avg loss: {test_loss:>8f} \n")
 
-epochs = 5
-for t in range(epochs):
-    print(f"Epoch {t+1}\n-------------------------------")
-    train(train_dataloader, model, loss_fn, optimizer)
-    test(test_dataloader, model, loss_fn)
+
+EPOCHS = 5  # 5
+for t in range(EPOCHS):
+    print(f"Epoch {t + 1}\n-------------------------------")
+    train(train_dataloader, MODEL, LOSS_FN, OPTIMIZER)
+    test(test_dataloader, MODEL, LOSS_FN)
 print("Done!")
+
+torch.save(MODEL.state_dict(), "model.pth")
+print("Saved PyTorch Model State to model.pth")
+
+MODEL_2 = NeuralNetwork().to(device)
+MODEL_2.load_state_dict(torch.load("model.pth", weights_only=True))
+
+classes = [
+    "T-shirt/top",
+    "Trouser",
+    "Pullover",
+    "Dress",
+    "Coat",
+    "Sandal",
+    "Shirt",
+    "Sneaker",
+    "Bag",
+    "Ankle boot",
+]
+
+MODEL.eval()
+x, y_ = test_data[0][0], test_data[0][1]
+with torch.no_grad():
+    x = x.to(device)
+    pred = MODEL(x)
+    predicted, actual = classes[pred[0].argmax(0)], classes[y_]
+    print(f'Predicted: "{predicted}", Actual: "{actual}"')

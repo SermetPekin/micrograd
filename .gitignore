@@ -13,3 +13,4 @@ ignore*/
 data/
 FashionMNIST/
 raw/
+*.pth

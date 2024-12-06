@@ -130,6 +130,17 @@ class Value(ValueMagics):
 
         return out
 
+    def log(self) -> 'Value':
+        """Logarithm is only defined for positive values."""
+        clamped_data = max(self.data, 1e-7)
+        out = Value(math.log(clamped_data), (self,), 'log')
+
+        def _backward():
+            self.grad += (1 / clamped_data) * out.grad
+
+        out._backward = _backward
+        return out
+
     def backward(self) -> None:
 
         # topological order all the children in the graph
