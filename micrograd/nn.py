@@ -119,7 +119,11 @@ class MLP(Module):
         import copy
         return copy.deepcopy(self)
 
-
+"""
+    Extended with this part 
+    OptimizerAbstract
+    
+"""
 class OptimizerAbstract(ABC):
     """OptimizerAbstract"""
 
