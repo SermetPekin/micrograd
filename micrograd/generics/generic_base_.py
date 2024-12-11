@@ -68,11 +68,7 @@ class SPNeuralNetworkImplBase(ABC):
         ...
     @staticmethod
     def load_data():
-        from sklearn.datasets import load_iris
-        data = load_iris()
-        X = data.data
-        y = data.target
-        return X , y
+        ...
 
     @abstractmethod
     def train(self):

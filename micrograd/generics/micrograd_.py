@@ -1,6 +1,8 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from sklearn.model_selection import KFold
+from sklearn.preprocessing import StandardScaler
+
 from micrograd import Value, MLP
 from micrograd.adam import Adam
 from sklearn.utils import shuffle as shuffle_data_sklearn
@@ -60,6 +62,16 @@ class MicrogradImpl(SPNeuralNetworkImplBase):
         self.optimizer = Adam(self.model.parameters(), lr=lr)
         self.losses = []
         self.validation_losses = []
+
+    def load_data(self):
+        from sklearn.datasets import load_iris
+        data = load_iris()
+        X = data.data
+        y = data.target
+        scaler = StandardScaler()
+        X = scaler.fit_transform(X)
+
+        return X, y
 
     def train(self, X_train, y_train, verbose=True):
         """Train the model with the given training data."""

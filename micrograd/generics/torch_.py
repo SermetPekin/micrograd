@@ -4,10 +4,10 @@ import torch.nn as nn
 import torch.nn.functional as F
 import torch.optim as optim
 import numpy as np
-import matplotlib.pyplot as plt
 from sklearn.model_selection import KFold
 
-from .generic_base_ import SPNeuralNetworkImplBase ,get_iris_data_split, iris_data_xy
+from .generic_base_ import SPNeuralNetworkImplBase, get_iris_data_split, iris_data_xy
+from .micrograd_ import plot_training_and_validation_loss
 
 
 class ModelPYTORCH(nn.Module):
@@ -39,6 +39,9 @@ class PyTorchImpl(SPNeuralNetworkImplBase):
         self.eval()
         self.show()
 
+    def eval(self):
+        ...
+
     # Standard training method
     def train(self, epochs=100, lr=0.01, save=True):
         self.epochs = epochs
@@ -64,14 +67,30 @@ class PyTorchImpl(SPNeuralNetworkImplBase):
         if save:
             torch.save(self.model.state_dict(), "iris_model.pth")
 
+    def load_data(self):
+        from sklearn.datasets import load_iris
+        from sklearn.preprocessing import StandardScaler
+        data = load_iris()
+        X = data.data
+        y = data.target
 
+        # Standardize the dataset
+        scaler = StandardScaler()
+        X = scaler.fit_transform(X)
+
+        # Convert to PyTorch tensors
+        X_tensor = torch.tensor(X, dtype=torch.float32)
+        y_tensor = torch.tensor(y, dtype=torch.long)
+
+        return X_tensor, y_tensor
 
     # Cross-validation training method
     def train_cv(self, epochs=100, lr=0.01, k_folds=5, save=True):
         # X, y = iris_data_xy()
-        X , y = self.load_data()
+        X, y = self.load_data()
         kf = KFold(n_splits=k_folds, shuffle=True, random_state=42)
         fold_losses = []
+        self.eval_losses = []
 
         for fold, (train_idx, val_idx) in enumerate(kf.split(X)):
             print(f'\nFold {fold + 1}/{k_folds}')
@@ -84,7 +103,6 @@ class PyTorchImpl(SPNeuralNetworkImplBase):
             self.model.apply(self._reset_weights)
             optimizer = optim.Adam(self.model.parameters(), lr=lr)
             self.losses = []
-
             for epoch in range(epochs):
                 # Forward pass
                 y_pred = self.model.forward(X_train)
@@ -101,11 +119,13 @@ class PyTorchImpl(SPNeuralNetworkImplBase):
 
             # Evaluate on the validation set
             self.model.eval()
+
             with torch.no_grad():
                 y_val_pred = self.model.forward(X_val)
                 val_loss = self.cross_entropy(y_val_pred, y_val).item()
                 print(f'Validation Loss for Fold {fold + 1}: {val_loss:.4f}')
                 fold_losses.append(val_loss)
+                self.eval_losses.append(val_loss)
 
         mean_loss = np.mean(fold_losses)
         std_loss = np.std(fold_losses)
@@ -121,16 +141,15 @@ class PyTorchImpl(SPNeuralNetworkImplBase):
         if hasattr(layer, 'reset_parameters'):
             layer.reset_parameters()
 
-
-
     # Visualization method
     def show(self):
-        plt.plot(range(self.epochs), self.losses, label='Training Loss')
-        plt.xlabel('Epochs')
-        plt.ylabel('Loss')
-        plt.title('Training Loss Curve')
-        plt.legend()
-        plt.show()
+        # plt.plot(range(self.epochs), self.losses, label='Training Loss')
+        # plt.xlabel('Epochs')
+        # plt.ylabel('Loss')
+        # plt.title('Training Loss Curve')
+        # plt.legend()
+        # plt.show()
+        plot_training_and_validation_loss(self.losses, self.eval_losses)
 
 
 def calc_torch_roc(model, X_test, y_test):
@@ -154,14 +173,13 @@ def calc_torch_roc(model, X_test, y_test):
 
     print(f"ROC AUC Score: {roc_auc:.4f}")
 
+
 def load_model_torch():
     # Load the model
     loaded_model = ModelPYTORCH()
     loaded_model.load_state_dict(torch.load("iris_model.pth"))
     loaded_model.eval()
     return loaded_model
-
-
 
 
 def with_torch(epochs=100, lr=0.01, k_folds=5):
