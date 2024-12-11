@@ -9,8 +9,11 @@ ignore*.*
 ignore*/
 --*/
 --*.*
+ig_*/
+ig_*.*
 
 data/
 FashionMNIST/
 raw/
 *.pth
+
